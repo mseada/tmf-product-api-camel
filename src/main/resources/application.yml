@@ -33,3 +33,26 @@ logging:
     com.mseada.tmf: DEBUG
     org.apache.camel: INFO
     org.springframework.web: INFO
+
+# ── SpringDoc / Swagger UI ──────────────────────────────────────────────────
+# springdoc-openapi serves the Swagger UI at /swagger-ui.html.
+# We disable springdoc's own spec generation (the live spec comes from
+# camel-openapi-java at /camel/api-doc) and register three spec URLs:
+#   1. /api-docs/tmf620  — official TMF620 Product Catalog Management reference spec
+#   2. /api-docs/tmf622  — official TMF622 Product Ordering Management reference spec
+#   3. /camel/api-doc    — live Camel-generated spec reflecting this implementation
+springdoc:
+  api-docs:
+    enabled: false          # camel-openapi-java owns the live spec; disable springdoc's own
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    urls:
+      - url: /api-docs/tmf620
+        name: "TMF620 Product Catalog Management (Official Spec v5.0.0)"
+      - url: /api-docs/tmf622
+        name: "TMF622 Product Ordering Management (Official Spec v4.0.0)"
+      - url: /camel/api-doc
+        name: "TM Forum Product API — Camel Implementation"
+    urls-primary-name: "TM Forum Product API — Camel Implementation"
