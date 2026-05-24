@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: tmf-product-api-camel
+  jackson:
+    default-property-inclusion: NON_NULL
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+camel:
+  springboot:
+    name: TmfProductApiCamelContext
+    main-run-controller: true
+  servlet:
+    mapping:
+      context-path: /camel/*
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,camel,routes
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.mseada.tmf: DEBUG
+    org.apache.camel: INFO
+    org.springframework.web: INFO
