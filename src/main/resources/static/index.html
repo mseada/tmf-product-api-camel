@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CairoBabysit - Trusted Babysitters in Cairo</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --teal: #2DD4BF;
+    --teal-dark: #14B8A6;
+    --teal-light: #CCFBF1;
+    --orange: #F97316;
+    --orange-light: #FED7AA;
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-400: #9CA3AF;
+    --gray-600: #4B5563;
+    --gray-800: #1F2937;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--gray-50); color: var(--gray-800); }
+
+  /* NAV */
+  nav {
+    background: var(--white);
+    box-shadow: var(--shadow);
+    position: sticky; top: 0; z-index: 100;
+    padding: 0 24px;
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .logo { font-size: 1.4rem; font-weight: 800; color: var(--teal-dark); cursor: pointer; text-decoration: none; }
+  .logo span { color: var(--orange); }
+  .nav-links { display: flex; gap: 8px; }
+  .nav-links button {
+    background: none; border: none; cursor: pointer;
+    padding: 8px 16px; border-radius: 8px;
+    font-size: 0.95rem; font-weight: 500; color: var(--gray-600);
+    transition: all .15s;
+  }
+  .nav-links button:hover, .nav-links button.active {
+    background: var(--teal-light); color: var(--teal-dark);
+  }
+  .hamburger { display: none; background: none; border: none; cursor: pointer; font-size: 1.5rem; }
+
+  /* VIEWS */
+  .view { display: none; }
+  .view.active { display: block; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 60%, #67E8F9 100%);
+    color: var(--white); padding: 60px 24px; text-align: center;
+  }
+  .hero h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; }
+  .hero p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 32px; }
+  .search-box {
+    display: flex; gap: 8px; max-width: 600px; margin: 0 auto;
+    background: var(--white); border-radius: 50px; padding: 6px 6px 6px 20px;
+    box-shadow: var(--shadow-md);
+  }
+  .search-box input {
+    flex: 1; border: none; outline: none; font-size: 1rem; color: var(--gray-800);
+    background: transparent;
+  }
+  .search-box button {
+    background: var(--orange); color: var(--white); border: none; cursor: pointer;
+    padding: 10px 24px; border-radius: 50px; font-size: 0.95rem; font-weight: 600;
+    transition: background .15s;
+  }
+  .search-box button:hover { background: #EA580C; }
+
+  /* FILTERS */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0; align-items: center; }
+  .filter-label { font-size: 0.85rem; font-weight: 600; color: var(--gray-600); }
+  .chip {
+    background: var(--white); border: 1.5px solid var(--gray-200); border-radius: 50px;
+    padding: 6px 16px; font-size: 0.85rem; cursor: pointer; transition: all .15s;
+    color: var(--gray-600); white-space: nowrap;
+  }
+  .chip:hover, .chip.active { background: var(--teal-light); border-color: var(--teal); color: var(--teal-dark); font-weight: 600; }
+  .chip.orange:hover, .chip.orange.active { background: var(--orange-light); border-color: var(--orange); color: #C2410C; }
+
+  /* SORT ROW */
+  .sort-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  .sort-row .count { color: var(--gray-400); font-size: 0.9rem; }
+  .sort-row select {
+    border: 1.5px solid var(--gray-200); border-radius: 8px; padding: 6px 12px;
+    font-size: 0.9rem; color: var(--gray-600); background: var(--white); cursor: pointer; outline: none;
+  }
+
+  /* GRID */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+  /* CARD */
+  .card {
+    background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 24px; transition: transform .15s, box-shadow .15s; cursor: default;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .card-header { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 14px; }
+  .avatar {
+    width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; font-weight: 700; color: var(--white); flex-shrink: 0;
+  }
+  .card-title { flex: 1; }
+  .card-title h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+  .card-title .area { font-size: 0.85rem; color: var(--gray-400); }
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 50px;
+    font-size: 0.75rem; font-weight: 600;
+  }
+  .badge-available { background: #D1FAE5; color: #065F46; }
+  .badge-busy { background: #FEE2E2; color: #991B1B; }
+  .badge-active { background: #D1FAE5; color: #065F46; }
+  .badge-inactive { background: var(--gray-100); color: var(--gray-600); }
+  .badge-pending { background: #FEF3C7; color: #92400E; }
+  .badge-confirmed { background: var(--teal-light); color: #0F766E; }
+  .badge-completed { background: #D1FAE5; color: #065F46; }
+  .badge-cancelled { background: #FEE2E2; color: #991B1B; }
+  .stars { color: #F59E0B; font-size: 0.9rem; }
+  .star-row { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .star-row .rating-val { font-weight: 700; font-size: 0.95rem; }
+  .star-row .review-count { color: var(--gray-400); font-size: 0.82rem; }
+  .pricing { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .price-tag {
+    background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 8px;
+    padding: 6px 10px; font-size: 0.78rem; text-align: center;
+  }
+  .price-tag .label { color: var(--gray-400); margin-bottom: 2px; }
+  .price-tag .amount { font-weight: 700; color: var(--teal-dark); }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+  .tag {
+    background: var(--gray-100); color: var(--gray-600); border-radius: 6px;
+    padding: 3px 8px; font-size: 0.75rem;
+  }
+  .btn {
+    display: inline-block; padding: 10px 20px; border-radius: 8px; font-size: 0.9rem;
+    font-weight: 600; cursor: pointer; border: none; transition: all .15s; text-align: center;
+  }
+  .btn-primary { background: var(--teal-dark); color: var(--white); }
+  .btn-primary:hover { background: #0D9488; }
+  .btn-orange { background: var(--orange); color: var(--white); }
+  .btn-orange:hover { background: #EA580C; }
+  .btn-outline { background: var(--white); color: var(--teal-dark); border: 1.5px solid var(--teal-dark); }
+  .btn-outline:hover { background: var(--teal-light); }
+  .btn-sm { padding: 7px 14px; font-size: 0.82rem; }
+  .btn-full { width: 100%; }
+  .btn-danger { background: #EF4444; color: var(--white); }
+  .btn-danger:hover { background: #DC2626; }
+
+  /* PROFILE VIEW */
+  .profile-hero {
+    background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+    padding: 48px 24px 32px; color: var(--white);
+  }
+  .profile-hero-inner {
+    max-width: 900px; margin: 0 auto;
+    display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;
+  }
+  .profile-avatar {
+    width: 100px; height: 100px; border-radius: 50%; font-size: 2.2rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; color: var(--white);
+    border: 4px solid rgba(255,255,255,0.4); flex-shrink: 0;
+  }
+  .profile-info h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
+  .profile-info .sub { opacity: 0.85; margin-bottom: 10px; }
+  .profile-body { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+  .profile-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+  .section { margin-bottom: 24px; }
+  .section h3 { font-size: 1rem; font-weight: 700; color: var(--gray-800); margin-bottom: 12px; border-bottom: 2px solid var(--teal-light); padding-bottom: 6px; }
+  .section p { color: var(--gray-600); line-height: 1.7; font-size: 0.95rem; }
+  .cert-list { list-style: none; }
+  .cert-list li { display: flex; align-items: center; gap: 8px; padding: 6px 0; color: var(--gray-600); font-size: 0.9rem; }
+  .cert-list li::before { content: "✓"; color: var(--teal-dark); font-weight: 700; }
+  .package-cards { display: flex; flex-direction: column; gap: 12px; }
+  .package-card {
+    border: 2px solid var(--gray-200); border-radius: var(--radius-sm); padding: 16px;
+    cursor: pointer; transition: all .15s; position: relative;
+  }
+  .package-card:hover, .package-card.selected { border-color: var(--teal); background: var(--teal-light); }
+  .package-card .pkg-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+  .package-card .pkg-price { font-size: 1.4rem; font-weight: 800; color: var(--teal-dark); }
+  .package-card .pkg-save { font-size: 0.75rem; color: var(--orange); font-weight: 600; }
+  .package-card .pkg-desc { font-size: 0.8rem; color: var(--gray-400); margin-top: 4px; }
+  .sticky-sidebar { position: sticky; top: 88px; }
+  .back-btn { display: inline-flex; align-items: center; gap: 6px; color: var(--teal-dark); background: none; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 600; margin-bottom: 20px; }
+  .back-btn:hover { text-decoration: underline; }
+
+  /* ADMIN */
+  .admin-gate {
+    max-width: 420px; margin: 80px auto; background: var(--white); border-radius: var(--radius);
+    padding: 40px; box-shadow: var(--shadow-md); text-align: center;
+  }
+  .admin-gate h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+  .admin-gate p { color: var(--gray-400); margin-bottom: 24px; font-size: 0.9rem; }
+  .form-group { margin-bottom: 16px; text-align: left; }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; border: 1.5px solid var(--gray-200); border-radius: 8px; padding: 10px 14px;
+    font-size: 0.95rem; outline: none; transition: border-color .15s; background: var(--white);
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--teal); }
+  .error-msg { color: #EF4444; font-size: 0.85rem; margin-top: 8px; }
+  .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--gray-200); margin-bottom: 24px; }
+  .tab {
+    padding: 10px 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    border: none; background: none; color: var(--gray-400); border-bottom: 2px solid transparent; margin-bottom: -2px;
+  }
+  .tab.active { color: var(--teal-dark); border-bottom-color: var(--teal-dark); }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; border-radius: var(--radius); box-shadow: var(--shadow); }
+  table { width: 100%; border-collapse: collapse; background: var(--white); font-size: 0.88rem; }
+  th { background: var(--gray-50); padding: 12px 16px; text-align: left; font-weight: 600; color: var(--gray-600); border-bottom: 1px solid var(--gray-200); }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--gray-100); color: var(--gray-800); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--gray-50); }
+  .clickable-row { cursor: pointer; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 200; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white); border-radius: var(--radius); padding: 32px;
+    width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+    box-shadow: var(--shadow-md); position: relative;
+  }
+  .modal h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px; background: none; border: none;
+    font-size: 1.4rem; cursor: pointer; color: var(--gray-400);
+  }
+  .modal-close:hover { color: var(--gray-800); }
+  .selected-pkg { background: var(--teal-light); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; }
+  .selected-pkg .pkg-label { font-size: 0.8rem; color: var(--gray-400); }
+  .selected-pkg .pkg-val { font-weight: 700; font-size: 1.1rem; color: var(--teal-dark); }
+  .success-msg { background: #D1FAE5; color: #065F46; border-radius: 8px; padding: 16px; margin-top: 12px; font-weight: 600; }
+
+  /* PAGE HEADER */
+  .page-header { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 32px 24px 0; }
+  .page-header-inner { max-width: 1100px; margin: 0 auto; }
+  .page-header h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 4px; }
+  .page-header p { color: var(--gray-400); font-size: 0.9rem; padding-bottom: 24px; }
+  .admin-header { display: flex; align-items: center; justify-content: space-between; }
+
+  /* EMPTY */
+  .empty { text-align: center; padding: 60px 20px; color: var(--gray-400); }
+  .empty .icon { font-size: 3rem; margin-bottom: 12px; }
+  .empty h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: var(--gray-600); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 1.7rem; }
+    .nav-links { display: none; }
+    .hamburger { display: block; }
+    .profile-grid { grid-template-columns: 1fr; }
+    .sticky-sidebar { position: static; }
+    .grid { grid-template-columns: 1fr; }
+  }
+  .mobile-menu {
+    display: none; background: var(--white); border-top: 1px solid var(--gray-200);
+    padding: 8px 16px;
+  }
+  .mobile-menu.open { display: block; }
+  .mobile-menu button {
+    display: block; width: 100%; text-align: left; padding: 12px 8px;
+    background: none; border: none; font-size: 0.95rem; cursor: pointer; color: var(--gray-800);
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .mobile-menu button:last-child { border-bottom: none; }
+
+  /* LOADING */
+  .spinner {
+    display: inline-block; width: 36px; height: 36px; border: 4px solid var(--gray-200);
+    border-top-color: var(--teal-dark); border-radius: 50%; animation: spin .7s linear infinite;
+    margin: 40px auto; display: block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-wrap { text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-inner">
+    <a class="logo" onclick="navigate('home')">Cairo<span>Babysit</span></a>
+    <div class="nav-links">
+      <button onclick="navigate('home')" id="nav-home">Home</button>
+      <button onclick="navigate('babysitters')" id="nav-babysitters">Babysitters</button>
+      <button onclick="navigate('admin')" id="nav-admin">Admin</button>
+    </div>
+    <button class="hamburger" onclick="toggleMobile()">&#9776;</button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <button onclick="navigate('home'); toggleMobile()">Home</button>
+    <button onclick="navigate('babysitters'); toggleMobile()">Babysitters</button>
+    <button onclick="navigate('admin'); toggleMobile()">Admin</button>
+  </div>
+</nav>
+
+<!-- HOME VIEW -->
+<div class="view active" id="view-home">
+  <div class="hero">
+    <h1>Find Trusted Babysitters in Cairo</h1>
+    <p>Connect with experienced, certified caregivers across all Cairo districts</p>
+    <div class="search-box">
+      <input type="text" id="hero-search" placeholder="Search by name or area (e.g. Maadi, Zamalek)..." onkeydown="if(event.key==='Enter') doHeroSearch()">
+      <button onclick="doHeroSearch()">Search</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="filters" id="home-area-filters">
+      <span class="filter-label">Area:</span>
+      <span class="chip active" data-area="" onclick="setAreaFilter(this, '')">All Areas</span>
+    </div>
+    <div class="filters">
+      <span class="filter-label">Rating:</span>
+      <span class="chip" data-rating="" onclick="setRatingFilter(this, '')">Any Rating</span>
+      <span class="chip" data-rating="4" onclick="setRatingFilter(this, 4)">4+ Stars</span>
+      <span class="chip" data-rating="4.5" onclick="setRatingFilter(this, 4.5)">4.5+ Stars</span>
+      <span class="filter-label" style="margin-left:12px">Availability:</span>
+      <span class="chip" data-avail="" onclick="setAvailFilter(this, '')">Any</span>
+      <span class="chip" data-avail="Available" onclick="setAvailFilter(this, 'Available')">Available Now</span>
+    </div>
+    <div class="sort-row">
+      <span class="count" id="home-count"></span>
+      <select onchange="setSortHome(this.value)">
+        <option value="rating">Sort: Highest Rated</option>
+        <option value="price_asc">Sort: Price (Low to High)</option>
+        <option value="price_desc">Sort: Price (High to Low)</option>
+        <option value="experience">Sort: Most Experienced</option>
+      </select>
+    </div>
+    <div class="grid" id="home-grid">
+      <div class="loading-wrap"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- BABYSITTERS LIST VIEW -->
+<div class="view" id="view-babysitters">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <h1>All Babysitters</h1>
+      <p>Browse our full list of verified caregivers in Cairo</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="filters">
+      <span class="filter-label">Filter:</span>
+      <input type="text" id="bs-search" placeholder="Name or area..." style="border:1.5px solid #E5E7EB; border-radius:8px; padding:7px 12px; font-size:.88rem; outline:none; width:200px" oninput="loadBabysitters()">
+      <span class="chip" data-bavail="" onclick="setBsAvail(this, '')">Any</span>
+      <span class="chip" data-bavail="Available" onclick="setBsAvail(this, 'Available')">Available</span>
+    </div>
+    <div class="sort-row">
+      <span class="count" id="bs-count"></span>
+      <select onchange="setSortBs(this.value)">
+        <option value="rating">Sort: Highest Rated</option>
+        <option value="price_asc">Price (Low to High)</option>
+        <option value="price_desc">Price (High to Low)</option>
+        <option value="experience">Most Experienced</option>
+      </select>
+    </div>
+    <div class="grid" id="bs-grid">
+      <div class="loading-wrap"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE VIEW -->
+<div class="view" id="view-profile">
+  <div id="profile-content">
+    <div class="loading-wrap" style="padding:60px"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<!-- ADMIN VIEW -->
+<div class="view" id="view-admin">
+  <div id="admin-gate-wrap">
+    <div class="admin-gate">
+      <div style="font-size:2.5rem;margin-bottom:16px">🔐</div>
+      <h2>Admin Access</h2>
+      <p>Enter the admin password to view customer profiles and booking data.</p>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="admin-password" placeholder="Enter admin password" onkeydown="if(event.key==='Enter') adminLogin()">
+      </div>
+      <div class="error-msg" id="admin-error" style="display:none">Incorrect password. Please try again.</div>
+      <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="adminLogin()">Sign In</button>
+    </div>
+  </div>
+  <div id="admin-dashboard" style="display:none">
+    <div class="page-header">
+      <div class="page-header-inner admin-header">
+        <div>
+          <h1>Admin Dashboard</h1>
+          <p>Manage customers and bookings</p>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="adminLogout()">Sign Out</button>
+      </div>
+    </div>
+    <div class="container">
+      <div class="tabs">
+        <button class="tab active" id="tab-customers" onclick="switchTab('customers')">Customers</button>
+        <button class="tab" id="tab-bookings" onclick="switchTab('bookings')">Bookings</button>
+      </div>
+      <div id="panel-customers">
+        <div class="table-wrap">
+          <table id="customers-table">
+            <thead><tr>
+              <th>Name</th><th>Email</th><th>Phone</th><th>Area</th><th>Children</th><th>Registered</th><th>Status</th>
+            </tr></thead>
+            <tbody id="customers-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="panel-bookings" style="display:none">
+        <div class="table-wrap">
+          <table id="bookings-table">
+            <thead><tr>
+              <th>Booking ID</th><th>Babysitter</th><th>Customer</th><th>Package</th><th>Start</th><th>End</th><th>Amount (EGP)</th><th>Status</th>
+            </tr></thead>
+            <tbody id="bookings-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="booking-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeBookingModal()">&#x2715;</button>
+    <h2>Book a Babysitter</h2>
+    <div class="selected-pkg" id="selected-pkg-display"></div>
+    <div id="booking-form-wrap">
+      <div class="form-group">
+        <label>Your Full Name</label>
+        <input type="text" id="b-name" placeholder="e.g. Ahmed Hassan">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="b-email" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="b-phone" placeholder="+20 100 000 0000">
+      </div>
+      <div class="form-group">
+        <label>Package</label>
+        <select id="b-package" onchange="updateModalPkg()">
+          <option value="DAILY">Daily</option>
+          <option value="WEEKLY">Weekly (7 days)</option>
+          <option value="MONTHLY">Monthly (30 days)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Start Date</label>
+        <input type="date" id="b-date">
+      </div>
+      <div class="error-msg" id="booking-error" style="display:none"></div>
+      <button class="btn btn-orange btn-full" style="margin-top:8px" onclick="submitBooking()">Confirm Booking</button>
+    </div>
+    <div class="success-msg" id="booking-success" style="display:none">
+      ✓ Booking confirmed! You'll receive a confirmation shortly.
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOMER DETAIL MODAL -->
+<div class="modal-overlay" id="customer-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeCustomerModal()">&#x2715;</button>
+    <h2>Customer Profile</h2>
+    <div id="customer-detail-content"></div>
+  </div>
+</div>
+
+<script>
+  // ===== STATE =====
+  const state = {
+    view: 'home',
+    babysitters: [],
+    customers: [],
+    bookings: [],
+    areas: [],
+    homeSearch: '',
+    homeArea: '',
+    homeMinRating: '',
+    homeAvail: '',
+    homeSort: 'rating',
+    bsSearch: '',
+    bsAvail: '',
+    bsSort: 'rating',
+    currentBabysitter: null,
+    selectedPkg: 'DAILY',
+    adminLoggedIn: false,
+    adminTab: 'customers',
+  };
+
+  const AVATAR_COLORS = ['#2DD4BF','#F97316','#8B5CF6','#EC4899','#3B82F6','#10B981','#F59E0B','#EF4444','#6366F1','#14B8A6'];
+
+  // ===== NAVIGATION =====
+  function navigate(view, param) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById('view-' + view);
+    if (el) el.classList.add('active');
+    const navEl = document.getElementById('nav-' + view.split('-')[0]);
+    if (navEl) navEl.classList.add('active');
+    state.view = view;
+    window.location.hash = param ? `${view}/${param}` : view;
+    if (view === 'home') loadHome();
+    if (view === 'babysitters') loadBabysitters();
+    if (view === 'profile' && param) loadProfile(param);
+    if (view === 'admin') initAdmin();
+    window.scrollTo(0, 0);
+  }
+
+  function toggleMobile() {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  }
+
+  // ===== API =====
+  async function api(path) {
+    const res = await fetch(path);
+    if (!res.ok) throw new Error('API error: ' + res.status);
+    return res.json();
+  }
+
+  async function post(path, body) {
+    const res = await fetch(path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    return { ok: res.ok, status: res.status, data: await res.json() };
+  }
+
+  // ===== STARS =====
+  function stars(rating) {
+    const full = Math.floor(rating);
+    const half = rating - full >= 0.5 ? 1 : 0;
+    const empty = 5 - full - half;
+    return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+  }
+
+  // ===== AVATAR =====
+  function avatarColor(name) {
+    let h = 0;
+    for (const c of name) h = (h * 31 + c.charCodeAt(0)) & 0xFFFFFF;
+    return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+  }
+
+  function initials(name) {
+    return name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+  }
+
+  function avatarHtml(name, size = 60, fontSize = '1.4rem') {
+    const color = avatarColor(name);
+    return `<div class="avatar" style="width:${size}px;height:${size}px;background:${color};font-size:${fontSize}">${initials(name)}</div>`;
+  }
+
+  // ===== FORMAT =====
+  function fmt(n) { return n.toLocaleString('en-EG'); }
+  function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}) : '—'; }
+
+  // ===== SORT =====
+  function sortBabysitters(list, sort) {
+    const sorted = [...list];
+    if (sort === 'rating') sorted.sort((a, b) => b.rating - a.rating);
+    else if (sort === 'price_asc') sorted.sort((a, b) => a.dailyRate - b.dailyRate);
+    else if (sort === 'price_desc') sorted.sort((a, b) => b.dailyRate - a.dailyRate);
+    else if (sort === 'experience') sorted.sort((a, b) => b.experienceYears - a.experienceYears);
+    return sorted;
+  }
+
+  // ===== BABYSITTER CARD =====
+  function babysitterCard(bs) {
+    const avBadge = bs.availability === 'Available'
+      ? `<span class="badge badge-available">${bs.availability}</span>`
+      : `<span class="badge badge-busy">${bs.availability}</span>`;
+    const skillTags = (bs.skills || []).slice(0, 3).map(s => `<span class="tag">${s}</span>`).join('');
+    const moreTags = bs.skills && bs.skills.length > 3 ? `<span class="tag">+${bs.skills.length - 3} more</span>` : '';
+    return `
+      <div class="card">
+        <div class="card-header">
+          ${avatarHtml(bs.name)}
+          <div class="card-title">
+            <h3>${bs.name}</h3>
+            <div class="area">📍 ${bs.area} · ${bs.experienceYears} yr${bs.experienceYears !== 1 ? 's' : ''} exp</div>
+          </div>
+          ${avBadge}
+        </div>
+        <div class="star-row">
+          <span class="stars">${stars(bs.rating)}</span>
+          <span class="rating-val">${bs.rating.toFixed(1)}</span>
+          <span class="review-count">(${bs.reviewCount} reviews)</span>
+        </div>
+        <div class="pricing">
+          <div class="price-tag"><div class="label">Daily</div><div class="amount">${fmt(bs.dailyRate)} EGP</div></div>
+          <div class="price-tag"><div class="label">Weekly</div><div class="amount">${fmt(bs.weeklyRate)} EGP</div></div>
+          <div class="price-tag"><div class="label">Monthly</div><div class="amount">${fmt(bs.monthlyRate)} EGP</div></div>
+        </div>
+        <div class="tags">${skillTags}${moreTags}</div>
+        <button class="btn btn-primary btn-full" onclick="navigate('profile', '${bs.id}')">View Profile</button>
+      </div>`;
+  }
+
+  // ===== HOME =====
+  async function loadHome() {
+    await ensureBabysitters();
+    await ensureAreas();
+    renderHomeAreaFilters();
+    renderHomeGrid();
+  }
+
+  async function ensureBabysitters() {
+    try {
+      state.babysitters = await api('/api/babysitters');
+    } catch(e) { state.babysitters = []; }
+  }
+
+  async function ensureAreas() {
+    try {
+      state.areas = await api('/api/babysitters/areas');
+    } catch(e) { state.areas = []; }
+  }
+
+  function renderHomeAreaFilters() {
+    const wrap = document.getElementById('home-area-filters');
+    wrap.innerHTML = `<span class="filter-label">Area:</span>
+      <span class="chip ${state.homeArea==='' ? 'active':''}" data-area="" onclick="setAreaFilter(this,'')">All Areas</span>
+      ${state.areas.map(a => `<span class="chip ${state.homeArea===a ? 'active':''}" data-area="${a}" onclick="setAreaFilter(this,'${a}')">${a}</span>`).join('')}`;
+  }
+
+  function renderHomeGrid() {
+    let list = state.babysitters;
+    if (state.homeSearch) {
+      const q = state.homeSearch.toLowerCase();
+      list = list.filter(b => b.name.toLowerCase().includes(q) || b.area.toLowerCase().includes(q));
+    }
+    if (state.homeArea) list = list.filter(b => b.area === state.homeArea);
+    if (state.homeMinRating) list = list.filter(b => b.rating >= parseFloat(state.homeMinRating));
+    if (state.homeAvail) list = list.filter(b => b.availability === state.homeAvail);
+    list = sortBabysitters(list, state.homeSort);
+    const grid = document.getElementById('home-grid');
+    const count = document.getElementById('home-count');
+    count.textContent = `${list.length} babysitter${list.length !== 1 ? 's' : ''} found`;
+    grid.innerHTML = list.length ? list.map(babysitterCard).join('') : `<div class="empty" style="grid-column:1/-1"><div class="icon">🔍</div><h3>No results found</h3><p>Try different filters</p></div>`;
+  }
+
+  function doHeroSearch() {
+    state.homeSearch = document.getElementById('hero-search').value;
+    renderHomeGrid();
+  }
+
+  function setAreaFilter(el, area) {
+    state.homeArea = area;
+    document.querySelectorAll('[data-area]').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderHomeGrid();
+  }
+
+  function setRatingFilter(el, rating) {
+    state.homeMinRating = rating;
+    document.querySelectorAll('[data-rating]').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderHomeGrid();
+  }
+
+  function setAvailFilter(el, avail) {
+    state.homeAvail = avail;
+    document.querySelectorAll('[data-avail]').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderHomeGrid();
+  }
+
+  function setSortHome(val) {
+    state.homeSort = val;
+    renderHomeGrid();
+  }
+
+  // ===== BABYSITTERS LIST =====
+  async function loadBabysitters() {
+    await ensureBabysitters();
+    renderBsGrid();
+  }
+
+  function renderBsGrid() {
+    const search = document.getElementById('bs-search')?.value || '';
+    let list = state.babysitters;
+    if (search) { const q = search.toLowerCase(); list = list.filter(b => b.name.toLowerCase().includes(q) || b.area.toLowerCase().includes(q)); }
+    if (state.bsAvail) list = list.filter(b => b.availability === state.bsAvail);
+    list = sortBabysitters(list, state.bsSort);
+    const grid = document.getElementById('bs-grid');
+    const count = document.getElementById('bs-count');
+    if (!grid) return;
+    count.textContent = `${list.length} babysitter${list.length !== 1 ? 's' : ''}`;
+    grid.innerHTML = list.length ? list.map(babysitterCard).join('') : `<div class="empty" style="grid-column:1/-1"><div class="icon">🔍</div><h3>No results</h3></div>`;
+  }
+
+  function setBsAvail(el, avail) {
+    state.bsAvail = avail;
+    document.querySelectorAll('[data-bavail]').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderBsGrid();
+  }
+
+  function setSortBs(val) {
+    state.bsSort = val;
+    renderBsGrid();
+  }
+
+  // ===== PROFILE =====
+  async function loadProfile(id) {
+    const wrap = document.getElementById('profile-content');
+    wrap.innerHTML = `<div class="loading-wrap" style="padding:60px"><div class="spinner"></div></div>`;
+    try {
+      const bs = await api(`/api/babysitters/${id}`);
+      state.currentBabysitter = bs;
+      wrap.innerHTML = renderProfileHtml(bs);
+      setDefaultDate();
+    } catch(e) {
+      wrap.innerHTML = `<div class="empty"><div class="icon">⚠️</div><h3>Babysitter not found</h3></div>`;
+    }
+  }
+
+  function renderProfileHtml(bs) {
+    const avBadge = bs.availability === 'Available'
+      ? `<span class="badge badge-available">${bs.availability}</span>`
+      : `<span class="badge badge-busy">${bs.availability}</span>`;
+    const dailySave = '';
+    const weeklySave = Math.round((1 - bs.weeklyRate / (bs.dailyRate * 7)) * 100);
+    const monthlySave = Math.round((1 - bs.monthlyRate / (bs.dailyRate * 30)) * 100);
+
+    const skillTags = (bs.skills || []).map(s => `<span class="tag">${s}</span>`).join('');
+    const langTags = (bs.languages || []).map(l => `<span class="tag">${l}</span>`).join('');
+    const certItems = (bs.certifications || []).map(c => `<li>${c}</li>`).join('');
+
+    return `
+    <div class="profile-hero">
+      <div class="profile-hero-inner">
+        ${avatarHtml(bs.name, 100, '2.2rem')}
+        <div class="profile-info">
+          <h1>${bs.name}</h1>
+          <div class="sub">📍 ${bs.area} · ${bs.age} years old · ${bs.experienceYears} yr${bs.experienceYears !== 1 ? 's' : ''} experience</div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span class="stars" style="font-size:1.1rem">${stars(bs.rating)}</span>
+            <span style="font-weight:700">${bs.rating.toFixed(1)}</span>
+            <span style="opacity:.75;font-size:.9rem">(${bs.reviewCount} reviews)</span>
+            ${avBadge}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-body">
+      <button class="back-btn" onclick="history.back()">← Back</button>
+      <div class="profile-grid">
+        <div>
+          <div class="section">
+            <h3>About</h3>
+            <p>${bs.bio}</p>
+          </div>
+          <div class="section">
+            <h3>Skills</h3>
+            <div class="tags">${skillTags}</div>
+          </div>
+          <div class="section">
+            <h3>Languages</h3>
+            <div class="tags">${langTags}</div>
+          </div>
+          <div class="section">
+            <h3>Certifications</h3>
+            <ul class="cert-list">${certItems}</ul>
+          </div>
+          <div class="section">
+            <h3>Contact</h3>
+            <p>📞 ${bs.phone || '—'}<br>✉️ ${bs.email || '—'}</p>
+          </div>
+        </div>
+        <div class="sticky-sidebar">
+          <div class="section">
+            <h3>Choose a Package</h3>
+            <div class="package-cards">
+              <div class="package-card selected" id="pkg-DAILY" onclick="selectPkg('DAILY')">
+                <div class="pkg-name">Daily</div>
+                <div class="pkg-price">${fmt(bs.dailyRate)} EGP</div>
+                <div class="pkg-desc">1 day of care</div>
+              </div>
+              <div class="package-card" id="pkg-WEEKLY" onclick="selectPkg('WEEKLY')">
+                <div class="pkg-name">Weekly</div>
+                <div class="pkg-price">${fmt(bs.weeklyRate)} EGP</div>
+                ${weeklySave > 0 ? `<div class="pkg-save">Save ${weeklySave}% vs daily rate</div>` : ''}
+                <div class="pkg-desc">7 days of care</div>
+              </div>
+              <div class="package-card" id="pkg-MONTHLY" onclick="selectPkg('MONTHLY')">
+                <div class="pkg-name">Monthly</div>
+                <div class="pkg-price">${fmt(bs.monthlyRate)} EGP</div>
+                ${monthlySave > 0 ? `<div class="pkg-save">Save ${monthlySave}% vs daily rate</div>` : ''}
+                <div class="pkg-desc">30 days of care</div>
+              </div>
+            </div>
+            <button class="btn btn-orange btn-full" style="margin-top:16px" onclick="openBookingModal()">Book Now</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function selectPkg(pkg) {
+    state.selectedPkg = pkg;
+    document.querySelectorAll('.package-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('pkg-' + pkg)?.classList.add('selected');
+  }
+
+  // ===== BOOKING MODAL =====
+  function openBookingModal() {
+    const bs = state.currentBabysitter;
+    if (!bs) return;
+    state.selectedPkg = 'DAILY';
+    document.querySelectorAll('.package-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('pkg-DAILY')?.classList.add('selected');
+    updateModalPkg();
+    document.getElementById('booking-modal').classList.add('open');
+    document.getElementById('booking-success').style.display = 'none';
+    document.getElementById('booking-error').style.display = 'none';
+    document.getElementById('booking-form-wrap').style.display = 'block';
+    setDefaultDate();
+  }
+
+  function closeBookingModal() {
+    document.getElementById('booking-modal').classList.remove('open');
+  }
+
+  function setDefaultDate() {
+    const d = document.getElementById('b-date');
+    if (d) d.value = new Date().toISOString().split('T')[0];
+  }
+
+  function updateModalPkg() {
+    const bs = state.currentBabysitter;
+    if (!bs) return;
+    const pkg = document.getElementById('b-package')?.value || state.selectedPkg;
+    state.selectedPkg = pkg;
+    const prices = { DAILY: bs.dailyRate, WEEKLY: bs.weeklyRate, MONTHLY: bs.monthlyRate };
+    const labels = { DAILY: 'Daily Package — 1 day', WEEKLY: 'Weekly Package — 7 days', MONTHLY: 'Monthly Package — 30 days' };
+    document.getElementById('selected-pkg-display').innerHTML = `
+      <div class="pkg-label">Selected Package</div>
+      <div class="pkg-val">${labels[pkg]}</div>
+      <div style="font-size:.85rem;color:#4B5563;margin-top:4px">Total: <strong>${fmt(prices[pkg])} EGP</strong></div>`;
+  }
+
+  async function submitBooking() {
+    const bs = state.currentBabysitter;
+    if (!bs) return;
+    const name = document.getElementById('b-name').value.trim();
+    const email = document.getElementById('b-email').value.trim();
+    const phone = document.getElementById('b-phone').value.trim();
+    const pkg = document.getElementById('b-package').value;
+    const date = document.getElementById('b-date').value;
+    const errEl = document.getElementById('booking-error');
+    errEl.style.display = 'none';
+    if (!name || !email || !date) {
+      errEl.textContent = 'Please fill in all required fields.';
+      errEl.style.display = 'block';
+      return;
+    }
+    const payload = {
+      babysitterId: bs.id,
+      packageType: pkg,
+      startDate: date,
+      customerName: name,
+      customerEmail: email,
+      customerPhone: phone,
+    };
+    const result = await post('/api/bookings', payload);
+    if (result.ok) {
+      document.getElementById('booking-form-wrap').style.display = 'none';
+      document.getElementById('booking-success').style.display = 'block';
+    } else {
+      errEl.textContent = result.data?.error || 'Booking failed. Please try again.';
+      errEl.style.display = 'block';
+    }
+  }
+
+  // ===== ADMIN =====
+  function initAdmin() {
+    if (state.adminLoggedIn) {
+      showAdminDashboard();
+    } else {
+      document.getElementById('admin-gate-wrap').style.display = 'block';
+      document.getElementById('admin-dashboard').style.display = 'none';
+    }
+  }
+
+  function adminLogin() {
+    const pw = document.getElementById('admin-password').value;
+    if (pw === 'admin123') {
+      state.adminLoggedIn = true;
+      document.getElementById('admin-error').style.display = 'none';
+      showAdminDashboard();
+    } else {
+      document.getElementById('admin-error').style.display = 'block';
+    }
+  }
+
+  function adminLogout() {
+    state.adminLoggedIn = false;
+    document.getElementById('admin-gate-wrap').style.display = 'block';
+    document.getElementById('admin-dashboard').style.display = 'none';
+    document.getElementById('admin-password').value = '';
+  }
+
+  async function showAdminDashboard() {
+    document.getElementById('admin-gate-wrap').style.display = 'none';
+    document.getElementById('admin-dashboard').style.display = 'block';
+    await Promise.all([loadCustomers(), loadBookingsFull()]);
+  }
+
+  function switchTab(tab) {
+    state.adminTab = tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('panel-customers').style.display = tab === 'customers' ? '' : 'none';
+    document.getElementById('panel-bookings').style.display = tab === 'bookings' ? '' : 'none';
+  }
+
+  async function loadCustomers() {
+    try {
+      state.customers = await api('/api/customers');
+      renderCustomersTable();
+    } catch(e) { state.customers = []; }
+  }
+
+  function renderCustomersTable() {
+    const tbody = document.getElementById('customers-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = state.customers.map(c => `
+      <tr class="clickable-row" onclick="openCustomerModal('${c.id}')">
+        <td><strong>${c.name}</strong></td>
+        <td>${c.email}</td>
+        <td>${c.phone || '—'}</td>
+        <td>${c.area || '—'}</td>
+        <td>${c.childrenCount}</td>
+        <td>${fmtDate(c.registrationDate)}</td>
+        <td><span class="badge badge-${(c.status||'').toLowerCase()}">${c.status}</span></td>
+      </tr>`).join('');
+  }
+
+  async function loadBookingsFull() {
+    try {
+      state.bookings = await api('/api/bookings');
+      await ensureBabysitters();
+      renderBookingsTable();
+    } catch(e) { state.bookings = []; }
+  }
+
+  function renderBookingsTable() {
+    const tbody = document.getElementById('bookings-tbody');
+    if (!tbody) return;
+    const bsMap = Object.fromEntries(state.babysitters.map(b => [b.id, b.name]));
+    const custMap = Object.fromEntries(state.customers.map(c => [c.id, c.name]));
+    tbody.innerHTML = state.bookings.map(b => `
+      <tr>
+        <td><code>${b.id}</code></td>
+        <td>${bsMap[b.babysitterId] || b.babysitterId}</td>
+        <td>${custMap[b.customerId] || b.customerId}</td>
+        <td><span class="badge badge-confirmed">${b.packageType}</span></td>
+        <td>${fmtDate(b.startDate)}</td>
+        <td>${fmtDate(b.endDate)}</td>
+        <td><strong>${fmt(b.totalAmount)}</strong></td>
+        <td><span class="badge badge-${(b.status||'').toLowerCase()}">${b.status}</span></td>
+      </tr>`).join('');
+  }
+
+  function openCustomerModal(id) {
+    const c = state.customers.find(x => x.id === id);
+    if (!c) return;
+    const content = document.getElementById('customer-detail-content');
+    const ages = (c.childrenAges || []).join(', ') || '—';
+    content.innerHTML = `
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
+        ${avatarHtml(c.name, 60, '1.3rem')}
+        <div>
+          <div style="font-size:1.2rem;font-weight:700">${c.name}</div>
+          <div style="color:#9CA3AF;font-size:.85rem">${c.area || ''} · Registered ${fmtDate(c.registrationDate)}</div>
+          <span class="badge badge-${(c.status||'').toLowerCase()}" style="margin-top:4px">${c.status}</span>
+        </div>
+      </div>
+      <table style="width:100%;font-size:.9rem">
+        <tr><td style="padding:8px 0;color:#9CA3AF;width:140px">Email</td><td>${c.email}</td></tr>
+        <tr><td style="padding:8px 0;color:#9CA3AF">Phone</td><td>${c.phone || '—'}</td></tr>
+        <tr><td style="padding:8px 0;color:#9CA3AF">Address</td><td>${c.address || '—'}</td></tr>
+        <tr><td style="padding:8px 0;color:#9CA3AF">Area</td><td>${c.area || '—'}</td></tr>
+        <tr><td style="padding:8px 0;color:#9CA3AF">Children</td><td>${c.childrenCount}</td></tr>
+        <tr><td style="padding:8px 0;color:#9CA3AF">Children Ages</td><td>${ages}</td></tr>
+        <tr><td style="padding:8px 0;color:#9CA3AF">Registered</td><td>${fmtDate(c.registrationDate)}</td></tr>
+        <tr><td style="padding:8px 0;color:#9CA3AF">Status</td><td><span class="badge badge-${(c.status||'').toLowerCase()}">${c.status}</span></td></tr>
+      </table>`;
+    document.getElementById('customer-modal').classList.add('open');
+  }
+
+  function closeCustomerModal() {
+    document.getElementById('customer-modal').classList.remove('open');
+  }
+
+  // Close modals on overlay click
+  document.getElementById('booking-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeBookingModal();
+  });
+  document.getElementById('customer-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeCustomerModal();
+  });
+
+  // ===== INIT =====
+  window.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash.startsWith('profile/')) {
+      navigate('profile', hash.replace('profile/', ''));
+    } else if (['home','babysitters','admin'].includes(hash)) {
+      navigate(hash);
+    } else {
+      navigate('home');
+    }
+  });
+</script>
+</body>
+</html>
